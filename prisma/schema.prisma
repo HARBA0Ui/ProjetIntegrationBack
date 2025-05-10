@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Utilisateur {
+  id             String             @id @default(auto()) @map("_id") @db.ObjectId
+  nom            String
+  email          String             @unique
+  motDePasse     String
+  type           Role               @default(USER)
+  profilePicture String?
+  fiches         Fiche[]
+  meets          Meet[]
+  progression    Progression?
+  flashcardSets  FlashcardSet[]
+  flashAttempts  FlashcardAttempt[]
+}
+
+model Fiche {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  titre       String
+  type        FicheType
+  userId      String         @db.ObjectId
+  utilisateur Utilisateur    @relation(fields: [userId], references: [id])
+  contenus    FicheContent[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model FicheContent {
+  id      String      @id @default(auto()) @map("_id") @db.ObjectId
+  ficheId String      @db.ObjectId
+  fiche   Fiche       @relation(fields: [ficheId], references: [id])
+  type    ContentType
+  text    String?
+  media   Media?      @relation(fields: [mediaId], references: [id])
+  mediaId String?     @db.ObjectId
+  order   Int
+}
+
+model Media {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  url          String
+  type         String
+  uploadedAt   DateTime       @default(now())
+  FicheContent FicheContent[]
+}
+
+model Meet {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  lien        String
+  date        DateTime
+  heure       String
+  userId      String      @db.ObjectId
+  utilisateur Utilisateur @relation(fields: [userId], references: [id])
+}
+
+model Progression {
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String      @unique @db.ObjectId
+  utilisateur    Utilisateur @relation(fields: [userId], references: [id])
+  totalAttempts  Int         @default(0)
+  correctAnswers Int         @default(0)
+  accuracy       Float       @default(0.0)
+  lastUpdated    DateTime    @updatedAt
+}
+
+model FlashcardSet {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  createdById String      @db.ObjectId
+  createdBy   Utilisateur @relation(fields: [createdById], references: [id])
+  flashcards  Flashcard[]
+  createdAt   DateTime    @default(now())
+}
+
+model Flashcard {
+  id       String             @id @default(auto()) @map("_id") @db.ObjectId
+  question String
+  answer   String
+  setId    String             @db.ObjectId
+  set      FlashcardSet       @relation(fields: [setId], references: [id])
+  attempts FlashcardAttempt[]
+}
+
+model FlashcardAttempt {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String      @db.ObjectId
+  flashcardId String      @db.ObjectId
+  correct     Boolean
+  attemptedAt DateTime    @default(now())
+  utilisateur Utilisateur @relation(fields: [userId], references: [id])
+  flashcard   Flashcard   @relation(fields: [flashcardId], references: [id])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum FicheType {
+  PUBLIC
+  PRIVE
+}
+
+enum ContentType {
+  TEXT
+  IMAGE
+  VIDEO
+  LINK
+  PDF
+}

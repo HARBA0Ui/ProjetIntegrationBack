@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../db/prisma.js";
 import path from "path";
-
-const prisma = new PrismaClient();
 
 function detectContentType(mimetype) {
   if (mimetype.startsWith("image/")) return "IMAGE";
@@ -14,7 +12,6 @@ export const createFicheWithUpload = async (req, res) => {
   try {
     const { titre, type, userId, order = 0 } = req.body;
     const file = req.file;
-
 
     const fiche = await prisma.fiche.create({
       data: {

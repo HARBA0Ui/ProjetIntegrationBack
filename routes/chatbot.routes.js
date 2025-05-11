@@ -1,8 +1,10 @@
-const express = require('express');
+import express from 'express';
+import {handleMessage} from "../controllers/chatbot.controller.js"
+import { authenticate } from '../middlewares/auth.middleware.js';
+
+
 const router = express.Router();
-const chatbotController = require('../controllers/chatbot.controller');
-const authMiddleware = require('../middlewares/auth.middleware');
 
-router.post('/message', authMiddleware, chatbotController.handleMessage);
+router.post('/message', handleMessage);
 
-module.exports = router;
+export default router;

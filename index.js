@@ -6,13 +6,13 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes.js";
 import flashcardsRoutes from "./routes/flashcards.routes.js";
 import ficheRoutes from "./routes/fiche.routes.js";
+import chatbotRoutes from "./routes/chatbot.routes.js"
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
-const chatbotRoutes = require('./routes/chatbot.routes');
 
 const io = new SocketIOServer(server, {
   cors: {

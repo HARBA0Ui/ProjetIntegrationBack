@@ -1,7 +1,7 @@
-import express from 'express';
 import { register, login } from '../controllers/auth.controller.js';
 import { authenticate } from '../middlewares/auth.middleware.js'; // Add this
 
+import express from 'express';
 const router = express.Router();
 
 // Public routes

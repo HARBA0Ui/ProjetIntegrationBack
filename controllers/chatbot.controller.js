@@ -1,36 +1,20 @@
-const { axios, DEEPSEEK_API, API_KEY } = require('../config/deepseek');
+import { API_KEY } from '../config/gemini.js';
 
-exports.handleMessage = async (req, res) => {
-  try {
-    const response = await axios.post(
-      DEEPSEEK_API,
-      {
-        messages: [
-          {
-            role: "system",
-            content: "You're a helpful assistant for a learning platform. Focus on helping with fiches, flashcards, and study techniques."
-          },
-          {
-            role: "user",
-            content: req.body.message
-          }
-        ],
-        model: "deepseek-chat", // Verify latest model name
-        temperature: 0.7
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+import { GoogleGenAI } from "@google/genai";
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 
-    res.json({
-      reply: response.data.choices[0].message.content
-    });
-    
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+
+export const handleMessage = async (req, res) => {
+  try{
+    const response = await ai.models.generateContent({
+    model: "gemini-2.0-flash",
+    contents: req.body.message,
+  });
+  res.status(200).json({message: response.text})
+
+  }catch(err){
+    res.status(500).json({message: "500!!"})
   }
-};
+}
+
+

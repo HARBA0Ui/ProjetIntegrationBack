@@ -1,15 +1,20 @@
 import express from 'express';
 import multer from 'multer';
-import * as ficheController from './controllers/ficheController'; 
+import { createFicheWithUpload,
+    getFichesByUser,
+    getFicheById,
+    updateFiche,
+    deleteFiche
+ } from "../controllers/fiche.controller.js"
 
 const router = express.Router();
 
 const upload = multer({ dest: 'uploads/' });
 
-router.post('/fiches', upload.single('file'), ficheController.createFicheWithUpload);
-router.get('/fiches/user/:userId', ficheController.getFichesByUser);
-router.get('/fiches/:ficheId', ficheController.getFicheById);
-router.put('/fiches/:ficheId', ficheController.updateFiche);
-router.delete('/fiches/:ficheId', ficheController.deleteFiche);
+router.post('', upload.single('file'), createFicheWithUpload);
+router.get('/user/:userId', getFichesByUser);
+router.get('/:ficheId', getFicheById);
+router.put('/:ficheId', updateFiche);
+router.delete('/:ficheId', deleteFiche);
 
 export default router;
